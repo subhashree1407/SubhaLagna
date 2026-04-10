@@ -123,12 +123,21 @@ const updateProfile = async (req, res) => {
       updateData.profilePhoto = `/${req.files['profilePhoto'][0].filename}`;
     }
     
-    // We can also let them push more additionalPhotos during update if we want,
-    // but right now just setting it up nicely.
+    // Handle additional photos (gallery)
     if (req.files && req.files['additionalPhotos']) {
-       // Just appending them to existing or replacing is a business decision.
-       // Here we'll just push them uniquely later or replace. For now, replace.
-       updateData.additionalPhotos = req.files['additionalPhotos'].map(f => `/${f.filename}`);
+       const newPhotos = req.files['additionalPhotos'].map(f => `/${f.filename}`);
+       // Append to existing photos, ensuring we don't exceed a reasonable limit (e.g., 6)
+       const existingPhotos = profile.additionalPhotos || [];
+       updateData.additionalPhotos = [...existingPhotos, ...newPhotos].slice(0, 6);
+    }
+    
+    // Support for deleting specific photos if requested
+    if (req.body.removePhotos) {
+      const photosToRemove = JSON.parse(req.body.removePhotos); // Expecting array of URLs
+      const remainingPhotos = (updateData.additionalPhotos || profile.additionalPhotos || []).filter(
+        p => !photosToRemove.includes(p)
+      );
+      updateData.additionalPhotos = remainingPhotos;
     }
 
     const updatedProfile = await Profile.findByIdAndUpdate(

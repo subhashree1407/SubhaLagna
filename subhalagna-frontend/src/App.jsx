@@ -9,6 +9,7 @@ import CreateProfile from './components/CreateProfile';
 import ProfileDashboard from './components/ProfileDashboard';
 import MatchResults from './components/MatchResults';
 import ProfileDetail from './components/ProfileDetail';
+import PremiumMembership from './components/PremiumMembership';
 
 // 1. Unauthenticated users allowed here (Home, Login, Signup)
 const GuestRoute = ({ children }) => {
@@ -78,10 +79,13 @@ function App() {
               <Route path="/create-profile" element={<OnboardRoute><CreateProfile /></OnboardRoute>} />
 
               {/* Full Access */}
-              <Route path="/matches" element={<ProtectedRoute><MatchResults /></ProtectedRoute>} />
-              <Route path="/profile/:id" element={<ProtectedRoute><ProfileDetail /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><ProfileDashboard /></ProtectedRoute>} />
+              <Route path="/premium" element={<ProtectedRoute><PremiumMembership /></ProtectedRoute>} />
             </Route>
+
+            {/* Standalone Route without AppLayout Padding */}
+            <Route path="/matches" element={<ProtectedRoute><MatchResults /></ProtectedRoute>} />
+            <Route path="/profile/:id" element={<ProtectedRoute><ProfileDetail /></ProtectedRoute>} />
           </Routes>
         </div>
       </Router>

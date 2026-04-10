@@ -160,10 +160,11 @@ const Login = () => {
               <input
                 type="email"
                 name="email"
+                placeholder="you@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-rose-500 transition-all font-sans text-sm text-gray-800"
+                className="login-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all font-sans text-sm text-gray-800"
               />
             </div>
 
@@ -175,10 +176,11 @@ const Login = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
+                  placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-rose-500 transition-all font-sans text-sm text-gray-800"
+                  className="login-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all font-sans text-sm text-gray-800"
                 />
                 <button
                   type="button"
@@ -234,6 +236,55 @@ const Login = () => {
           height: 100%;
           margin: 0;
           padding: 0;
+        }
+
+        /* ── White background on focus / active ── */
+        .login-input,
+        .login-input:focus,
+        .login-input:active,
+        .login-input:hover {
+          background-color: #ffffff !important;
+          color: #1f2937 !important;
+          caret-color: #1f2937 !important;
+        }
+
+        /* ── Placeholder — light soft grey ── */
+        .login-input::placeholder {
+          color: #d1d5db !important;
+          -webkit-text-fill-color: #d1d5db !important;
+          opacity: 1 !important;
+        }
+
+        .login-input::-webkit-input-placeholder {
+          color: #d1d5db !important;
+          -webkit-text-fill-color: #d1d5db !important;
+        }
+
+        .login-input::-moz-placeholder {
+          color: #d1d5db !important;
+          opacity: 1 !important;
+        }
+
+        .login-input:-ms-input-placeholder {
+          color: #d1d5db !important;
+        }
+
+        /* ── Chrome / Edge / Safari autofill override ── */
+        .login-input:-webkit-autofill,
+        .login-input:-webkit-autofill:hover,
+        .login-input:-webkit-autofill:focus,
+        .login-input:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+          box-shadow: 0 0 0 1000px #ffffff inset !important;
+          -webkit-text-fill-color: #1f2937 !important;
+          background-color: #ffffff !important;
+          transition: background-color 9999s ease-in-out 0s;
+        }
+
+        /* ── Firefox autofill ── */
+        .login-input:autofill {
+          background-color: #ffffff !important;
+          color: #1f2937 !important;
         }
 
         @keyframes float-heart {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CITIES } from '../data/mockProfiles';
+import { API_BASE_URL } from '../config';
 
 const RegistrationForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const RegistrationForm = ({ onSubmit }) => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/profiles', {
+      const response = await fetch(`${API_BASE_URL}/api/profiles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

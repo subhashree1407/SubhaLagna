@@ -13,8 +13,11 @@ const FloatingHeart = ({ style, size = 'sm' }) => {
 
   return (
     <svg
-      className={`absolute ${sizes[size]} animate-float-heart pointer-events-none`}
-      style={style}
+      className={`absolute ${sizes[size]} pointer-events-none`}
+      style={{
+        ...style,
+        animation: `float-heart ${style.animationDuration || '4s'} ease-in-out ${style.animationDelay || '0s'} infinite`,
+      }}
       fill="currentColor"
       viewBox="0 0 24 24"
     >
@@ -69,6 +72,25 @@ const bgHearts = [
   { left: '75%', top: '85%', size: 'sm', delay: '2.9s', duration: '4.3s' },
   { left: '35%', top: '95%', size: 'xs', delay: '0.7s', duration: '3.6s' },
 ];
+// ─── Inject keyframes once ──────────────────────────────────────────────────
+const keyframesId = 'signup-keyframes';
+if (typeof document !== 'undefined' && !document.getElementById(keyframesId)) {
+  const styleEl = document.createElement('style');
+  styleEl.id = keyframesId;
+  styleEl.textContent = `
+    @keyframes float-heart {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.35; }
+      25% { transform: translateY(-8px) rotate(5deg) scale(1.1); opacity: 0.55; }
+      50% { transform: translateY(-3px) rotate(-3deg) scale(0.95); opacity: 0.4; }
+      75% { transform: translateY(-10px) rotate(3deg) scale(1.05); opacity: 0.5; }
+    }
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `;
+  document.head.appendChild(styleEl);
+}
 
 // ─── Signup Component ────────────────────────────────────────────────────────
 const Signup = () => {
@@ -125,13 +147,18 @@ const Signup = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const inputClasses =
+    'w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all font-sans text-sm text-gray-800';
+
+  const toggleBtnClasses =
+    'absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500 transition-colors p-1 focus:outline-none focus:ring-0 focus:shadow-none';
+
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <>
       {/* ── Background ──────────────────────────────────────────────────────── */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100/80" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-rose-200/15 rounded-full blur-3xl" />
-
         {bgHearts.map((heart, i) => (
           <FloatingHeart
             key={i}
@@ -146,12 +173,10 @@ const Signup = () => {
             }}
           />
         ))}
-
         <div
           className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage:
-              'radial-gradient(circle at 2px 2px, #fecdd3 1px, transparent 0)',
+            backgroundImage: 'radial-gradient(circle at 2px 2px, #fecdd3 1px, transparent 0)',
             backgroundSize: '32px 32px',
           }}
         />
@@ -160,18 +185,27 @@ const Signup = () => {
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <Header />
 
+      {/* ── Page Layout ────────────────────────────────────────────────────── */}
+      <div className="min-h-screen flex flex-col" style={{ margin: 0, padding: 0 }}>
+
+
       {/* ── Main Content ────────────────────────────────────────────────────── */}
-      <main className="flex-1 flex items-center justify-center px-4 relative z-10">
-        <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100/60 animate-fade-in -mt-16">
-          {/* Heading */}
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">
-              Step 1: Account Setup
-            </h2>
-            <p className="text-gray-400 text-sm">
-              Create your login credentials 💕
-            </p>
-          </div>
+      <main className="flex-1 flex flex-col items-center justify-start px-4 relative z-10 pt-2 pb-12">
+        
+        {/* Heading moved outside card for consistency */}
+        <div className="text-center mb-4 max-w-md w-full">
+          <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">
+            Step 1: Account Setup
+          </h2>
+          <p className="text-gray-400 text-sm">
+            Create your login credentials 💕
+          </p>
+        </div>
+
+        <div
+          className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100/60"
+          style={{ animation: 'fade-in-up 0.6s ease-out forwards' }}
+        >
 
           {/* Error */}
           {errorStr && (
@@ -194,7 +228,8 @@ const Signup = () => {
                 onChange={handleChange}
                 required
                 placeholder="John Doe"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 outline-none focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all font-sans text-sm text-gray-800"
+                className={inputClasses}
+                style={{ outline: 'none' }}
               />
             </div>
 
@@ -210,7 +245,8 @@ const Signup = () => {
                 onChange={handleChange}
                 required
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 outline-none focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all font-sans text-sm text-gray-800"
+                className={inputClasses}
+                style={{ outline: 'none' }}
               />
             </div>
 
@@ -228,12 +264,13 @@ const Signup = () => {
                   minLength={8}
                   required
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 outline-none focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all font-sans text-sm text-gray-800"
+                  className={inputClasses}
+                  style={{ outline: 'none' }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500 transition-colors p-1"
+                  className={toggleBtnClasses}
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,12 +303,13 @@ const Signup = () => {
                   minLength={8}
                   required
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 outline-none focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all font-sans text-sm text-gray-800"
+                  className={inputClasses}
+                  style={{ outline: 'none' }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500 transition-colors p-1"
+                  className={toggleBtnClasses}
                 >
                   {showConfirmPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -291,7 +329,7 @@ const Signup = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full mt-4 py-3.5 px-4 rounded-xl text-white font-semibold flex justify-center items-center shadow-lg transition-all ${isSubmitting
+              className={`w-full mt-4 py-3.5 px-4 rounded-xl text-white font-semibold flex justify-center items-center shadow-lg transition-all focus:outline-none focus:ring-0 ${isSubmitting
                 ? 'bg-rose-400'
                 : 'bg-rose-600 hover:bg-rose-700 hover:-translate-y-0.5'
                 }`}
@@ -307,78 +345,16 @@ const Signup = () => {
             </Link>
           </p>
         </div>
+
+        {/* ── Footer ─────────────────────────────────────────────────────────── */}
+        <footer className="shrink-0 py-6 text-center">
+          <p className="text-xs text-gray-400 font-medium tracking-wide">
+            © 2026 <span className="text-rose-400">Subhalagna</span>. All rights reserved.
+          </p>
+        </footer>
       </main>
-
-      {/* ── Footer ─────────────────────────────────────────────────────────── */}
-      <footer className="shrink-0 py-4 text-center relative z-10 mt-auto">
-        <p className="text-xs text-gray-400 font-medium tracking-wide">
-          © 2026 <span className="text-rose-400">Subhalagna</span>. All rights reserved.
-        </p>
-      </footer>
-
-
-      {/* ── Animations & Global Styles ─────────────────────────────────────── */}
-      <style>{`
-        html, body, #root {
-          height: 100%;
-          margin: 0;
-          padding: 0;
-        }
-
-        /* Hide scrollbar for all browsers but keep scroll functionality */
-        .scrollbar-hide {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;     /* Firefox */
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;             /* Chrome, Safari, Opera */
-        }
-
-        /* Remove all black/default outlines on focus globally */
-        input:focus,
-        button:focus,
-        textarea:focus,
-        select:focus {
-          outline: none !important;
-          box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.5) !important;
-          border-color: #fb7185 !important;
-        }
-
-        /* Override button focus to not show ring */
-        button:focus {
-          box-shadow: none !important;
-        }
-
-        @keyframes float-heart {
-          0%, 100% {
-            transform: translateY(0px) rotate(0deg) scale(1);
-            opacity: 0.35;
-          }
-          25% {
-            transform: translateY(-8px) rotate(5deg) scale(1.1);
-            opacity: 0.55;
-          }
-          50% {
-            transform: translateY(-3px) rotate(-3deg) scale(0.95);
-            opacity: 0.4;
-          }
-          75% {
-            transform: translateY(-10px) rotate(3deg) scale(1.05);
-            opacity: 0.5;
-          }
-        }
-        .animate-float-heart {
-          animation: float-heart 4s ease-in-out infinite;
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(12px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out forwards;
-        }
-      `}</style>
     </div>
+    </>
   );
 };
 
